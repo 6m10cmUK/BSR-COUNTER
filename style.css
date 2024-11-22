@@ -1,0 +1,96 @@
+.magazine {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15%;
+}
+.bullet {
+    width: 20px;
+    height: 35px;
+    background-color: rgb(99, 99, 99);
+}
+
+.true {
+    background-color: rgb(201, 99, 99) !important;
+}
+
+.false {
+    background-color: rgb(83, 121, 195) !important;
+}
+
+.count {
+    font-size: 20px;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    margin-top: 20px;
+
+}
+
+.prediction_magazine {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.prediction_bullet {
+    display: flex;
+    flex-direction: row;
+    font-size: 18px;
+    font-weight: bold;
+    width: 160px;
+    height: 24px;
+    background-color: rgb(185, 185, 185);
+    border: 3px solid rgb(111, 111, 111);
+    justify-content: center;
+    align-items: center;
+}
+
+.true_set, .false_set {
+    width: 30px;
+    height: 30px;
+}
+
+.reset {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    background-color: rgb(185, 185, 185);
+    padding: 10px;
+}
+
+.reverse {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    background-color: rgb(30, 30, 30);
+    color: rgb(185, 185, 185);
+    padding: 10px;
+}
+
+.fire{
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.out{
+    filter: brightness(70%);
+}
+
+.check {
+    border: 3px solid rgb(222, 168, 60);
+}
