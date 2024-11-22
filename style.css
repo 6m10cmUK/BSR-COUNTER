@@ -1,3 +1,12 @@
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    margin: 0 auto;
+
+}
 .magazine {
     display: flex;
     flex-direction: row;
@@ -78,13 +87,26 @@
     padding: 10px;
 }
 
-.fire{
+.fire-container {
+    display: flex;
+    justify-content: center; /* 中央揃えにしたい場合 */
+    gap: 10px; /* 要素間のスペース */
+}
+
+.fire, .undo-fire {
     margin-top: 20px;
-    font-size: 20px;
     font-weight: bold;
     text-align: center;
     border: 1px solid black;
     padding: 10px;
+}
+
+.fire {
+    font-size: 20px;
+}
+
+.undo-fire {
+    font-size: 10px;
 }
 
 .out{

@@ -22,50 +22,29 @@ $(document).ready(function() {
     $('.reset').click(function() {
         reset();
     });
-
     $('.fire').click(function() {
         fire();
+    });
+    $('.undo-fire').click(function() {
+        fire(false);
     });
 });
 
 function fire(flg = true) {
+    if(prediction_bullet_status.length == 0) {
+        return;
+    }
     if(flg) {
-        if(bullet_true + bullet_false == 0 || (!$('.prediction_bullet').eq(fire_count).hasClass('true') && !$('.prediction_bullet').eq(fire_count).hasClass('false'))) {
+        if((!$('.prediction_bullet').eq(fire_count).hasClass('true') && !$('.prediction_bullet').eq(fire_count).hasClass('false'))){
             return;
         }
-        $('.prediction_bullet').eq(fire_count).addClass('out');
-        for(var i = 0; i < bullet_true + bullet_false; i++) {
-            if($('.prediction_bullet').eq(fire_count).hasClass('true')) {
-                if($('.bullet').eq(i).hasClass('true') && !$('.bullet').eq(i).hasClass('out')) {
-                    $('.bullet').eq(i).addClass('out');
-                    break;
-                }
-            }else if($('.prediction_bullet').eq(fire_count).hasClass('false')) {
-                if($('.bullet').eq(i).hasClass('false') && !$('.bullet').eq(i).hasClass('out')) {
-                    $('.bullet').eq(i).addClass('out');
-                    break;
-                }
-            }
-        }
+        prediction_bullet_status[fire_count].status = true;
         fire_count++;
     }else{
         fire_count--;    
-        $('.prediction_bullet').eq(fire_count).removeClass('out');
-        for(var i = bullet_true + bullet_false - 1; i >= 0; i--) {
-            if($('.prediction_bullet').eq(fire_count).hasClass('true')) {
-                if($('.bullet').eq(i).hasClass('true') && $('.bullet').eq(i).hasClass('out')) {
-                    $('.bullet').eq(i).removeClass('out');
-                    break;
-                }
-            }else if($('.prediction_bullet').eq(fire_count).hasClass('false')) {
-                if($('.bullet').eq(i).hasClass('false') && $('.bullet').eq(i).hasClass('out')) {
-                    $('.bullet').eq(i).removeClass('out');
-                    break;
-                }
-            }
-        }
+        prediction_bullet_status[fire_count].status = false;  
     }
-
+ 
     if(fire_count < 0) {
         fire_count = 0;
     }
@@ -74,14 +53,15 @@ function fire(flg = true) {
         fire_count = bullet_true + bullet_false;
     }
 
+    check();
 }
 
 function reverse() {
     prediction_bullet_status = prediction_bullet_status.map(status => {
-        if (status === true) {
-            return false;
-        } else if (status === false) {
-            return true;
+        if (status.type === true) {
+            return {type: false, status: status.status};
+        } else if (status.type === false) {
+            return {type: true, status: status.status};
         } else {
             return status; // nullや他の値はそのまま
         }
@@ -89,7 +69,6 @@ function reverse() {
     var temp = bullet_true;
     bullet_true = bullet_false;
     bullet_false = temp;
-    check();
 
     $('.bullet').removeClass('true false');
     for (var i = 0; i < bullet_true; i++) {
@@ -99,6 +78,9 @@ function reverse() {
     for (var i = bullet_true; i < bullet_true + bullet_false; i++) {
         $('.bullet').eq(i).addClass('false');
     }
+
+    check();
+
 }
 
 function reset() {
@@ -122,54 +104,68 @@ function set_prediction_bullet_status(index) {
     if($('.prediction_bullet').eq(index).hasClass('out')) {
         return;
     }
-    if(prediction_bullet_status[index] == null) {
-        if(prediction_bullet_status.filter(status => status === true).length < bullet_true) {   
-            prediction_bullet_status[index] = true;
+    if(prediction_bullet_status[index].type == null) {
+        if(prediction_bullet_status.filter(status => status.type === true).length < bullet_true) {   
+            prediction_bullet_status[index].type = true;
             $('.prediction_bullet').eq(index).addClass('check');
         }else{
-            prediction_bullet_status[index] = null;
+            prediction_bullet_status[index].type = null;
             $('.prediction_bullet').eq(index).removeClass('check');
         }
-    } else if(prediction_bullet_status[index] == true) {
-        if(prediction_bullet_status.filter(status => status === false).length < bullet_false) {
-            prediction_bullet_status[index] = false;
+    } else if(prediction_bullet_status[index].type == true) {
+        if(prediction_bullet_status.filter(status => status.type === false).length < bullet_false) {
+            prediction_bullet_status[index].type = false;
             $('.prediction_bullet').eq(index).addClass('check');
         }else{
-            prediction_bullet_status[index] = null;
+            prediction_bullet_status[index].type = null;
             $('.prediction_bullet').eq(index).removeClass('check');
         }
-    } else if(prediction_bullet_status[index] == false) {
-        prediction_bullet_status[index] = null;
+    } else if(prediction_bullet_status[index].type == false) {
+        prediction_bullet_status[index].type = null;
         $('.prediction_bullet').eq(index).removeClass('check');
     }
     check();
 }
 
 function check() {
-    $('.prediction_magazine .prediction_bullet').each(function(index) {
-        $(this).removeClass('true').removeClass('false');
-        if(prediction_bullet_status[index]){
+    $('.prediction_magazine .prediction_bullet').removeClass('true').removeClass('false').removeClass('out')
+    .each(function(index) {
+        if(prediction_bullet_status[index].type == true){
             $(this).addClass('true');
-        } else if(prediction_bullet_status[index] == false) {
+        } else if(prediction_bullet_status[index].type == false) {
             $(this).addClass('false');
+        }
+        if(prediction_bullet_status[index].status == true) {
+            $(this).addClass('out');
         }
     });
 
-    let trueCount = prediction_bullet_status.filter(status => status === true).length;
-    let falseCount = prediction_bullet_status.filter(status => status === false).length;
+    let trueCount = prediction_bullet_status.filter(status => status.type === true).length;
+    let falseCount = prediction_bullet_status.filter(status => status.type === false).length;
 
     if(trueCount == bullet_true) {
         $('.prediction_magazine .prediction_bullet').each(function(index) {
-            if(prediction_bullet_status[index] == null) {
+            if(prediction_bullet_status[index].type == null) {
                 $(this).addClass('false');
             }
         });
     } else if (falseCount == bullet_false) {
         $('.prediction_magazine .prediction_bullet').each(function(index) {
-            if(prediction_bullet_status[index] == null) {
+            if(prediction_bullet_status[index].type == null) {
                 $(this).addClass('true');
             }
         });
+    }
+
+    let trueOutCount = prediction_bullet_status.filter((status, index) => $('.prediction_magazine .prediction_bullet').eq(index).hasClass('true') && status.status == true).length;
+    let falseOutCount = prediction_bullet_status.filter((status, index) => $('.prediction_magazine .prediction_bullet').eq(index).hasClass('false') && status.status == true).length;
+
+    $('.magazine .bullet').removeClass('out');
+    for(var i = 0; i < trueOutCount; i++) {
+        $('.magazine .bullet').eq(i).addClass('out');
+    }
+    for(var i = 0; i < falseOutCount; i++) {
+        $('.magazine .bullet').eq(bullet_true + i).addClass('out');
     }
 }
 
@@ -202,7 +198,7 @@ function set_bullet_count(index) {
         }
         for (var i = 0; i < bullet_true + bullet_false; i++) {
             $('.prediction_magazine').append(`<div class="prediction_bullet">${i + 1}</div>`);
-            prediction_bullet_status.push(null);
+            prediction_bullet_status.push({type: null, status: false});
         }
         set();
         $('.count').text(bullet_true + bullet_false);
